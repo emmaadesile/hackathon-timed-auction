@@ -1,6 +1,13 @@
-import logo from '../logo.svg'
-import './index.css'
+import { Section } from "../components";
+import "./index.css";
 
-export function Loader(){
-  return <img src={logo} className='loader' alt='loader'/>
+export function Loader() {
+  return (
+    <Section>
+      <div className="lds-ripple">
+        <div></div>
+        <div></div>
+      </div>
+    </Section>
+  );
 }

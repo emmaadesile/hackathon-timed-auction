@@ -3,13 +3,14 @@
 
 export const main = Reach.App(() => {
     const Auctiooner = Participant('Auctiooner', {
-          initateBid: Fun([], Object({
+          initiateBid: Fun([], Object({
                nftId: Token,
                Timeout: UInt,
-               minimumBud: UInt,
+               minimumBid: UInt,
           })),
           seeOutcome:Fun([Address, UInt], Null),
-          seeBid:Fun([Address, UInt], Null)
+          seeBid:Fun([Address, UInt], Null),
+          auctionReady: Fun([], Null)
 
     });
     const Bidder = API('Bidder', { 
@@ -17,23 +18,28 @@ export const main = Reach.App(() => {
      });
      init();
 
-     Auctiooner.only(() =>{
-        const { nftId, Timeout,minimumBud} = declassify( interact.initateBid())
-        })
-        Auctiooner.publish(nftId, Timeout,minimumBud)
-        .timeout(false);
-         const amt = 1
-        commit();
-        Auctiooner.pay([[amt,nftId]]);
-        assert(balance(nftId)== amt,"balance of NFT is wrong")
-        
-       const [ timeRemaining, keepGoing ] = makeDeadline(Timeout)
-       
+    Auctiooner.only(() =>{
+        const { nftId, Timeout,minimumBid} = declassify( interact.initiateBid())
+    })
+
+    Auctiooner.publish(nftId, Timeout,minimumBid)
+    .timeout(false);
+    const amt = 1
+    commit();
+
+    Auctiooner.pay([[amt,nftId]]);
+
+    Auctiooner.interact.auctionReady();
+
+    assert(balance(nftId) === amt,"balance of NFT is wrong")
+    
+    const [ timeRemaining, keepGoing ] = makeDeadline(Timeout)
+    
        //let them fight for bid
      const [ winner, currentPrice, isFirstBid  ] = 
-     parallelReduce([ Auctiooner, minimumBud, true ])
-       .invariant(balance(nftId) == amt)
-       .invariant(balance() == (isFirstBid ? 0 : currentPrice))
+     parallelReduce([ Auctiooner, minimumBid, true ])
+       .invariant(balance(nftId) === amt)
+       .invariant(balance() === (isFirstBid ? 0 : currentPrice))
        .while(keepGoing())
        .api_(Bidder.bid, (bid) =>{
         check(bid > currentPrice );

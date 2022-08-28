@@ -1,5 +1,5 @@
 import { loadStdlib } from '@reach-sh/stdlib';
-import * as backend from '../build/index.main.mjs';
+import * as backend from './build/index.main.mjs';
 
 const stdlib = loadStdlib();
 const startingBalance = stdlib.parseCurrency(100);
@@ -9,15 +9,17 @@ const accAuct = await stdlib.newTestAccount(startingBalance);
 
 console.log(`Having creator create testing NFT`);
 const theNFT = await stdlib.launchToken(accAuct, "bumple", "NFT", { supply: 1 });
-const nftId = theNFT.id;
+const nftId = (theNFT.id);
 const minimumBid = stdlib.parseCurrency(2);
-const Timeout = 10;
+const Timeout = 5;
 const params = { nftId, minimumBid, Timeout };
 
 let done = false;
 const bidders = [];
+
 const startBidders = async () => {
     let bid = minimumBid;
+
     const runBidder = async (who) => {
         const inc = stdlib.parseCurrency(Math.random() * 10);
         bid = bid.add(inc);
@@ -49,13 +51,17 @@ const startBidders = async () => {
 };
 
 const ctcAuct = accAuct.contract(backend);
-await ctcAuct.participants.Auctioneer({
+
+await backend.Auctiooner(ctcAuct, {
     initiateBid: () => {
         console.log(`Auctioneer sets parameters of sale:`, params);
         return params;
     },
     auctionReady: () => {
-        startBidders();
+        setTimeout(() => {
+            startBidders();
+        }, 10000)
+        console.log("Bid has started")
     },
     seeBid: (who, amt) => {
         console.log(`Auctioneer saw that ${stdlib.formatAddress(who)} bid ${stdlib.formatCurrency(amt)}.`);
@@ -63,7 +69,7 @@ await ctcAuct.participants.Auctioneer({
     seeOutcome: (winner, amt) => {
         console.log(`Auctioneer saw that ${stdlib.formatAddress(winner)} won with ${stdlib.formatCurrency(amt)}`);
     },
-});
+})
 
 for ( const [who, acc] of bidders ) {
     const [ amt, amtNFT ] = await stdlib.balancesOf(acc, [null, nftId]);
