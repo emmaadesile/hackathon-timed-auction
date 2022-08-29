@@ -1,5 +1,5 @@
 import { Section } from "../components";
-import "./index.css";
+import "../index.css";
 
 export function Loader() {
   return (

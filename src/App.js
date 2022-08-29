@@ -1,9 +1,10 @@
-import "./App.css";
+import { useState } from "react";
 import { loadStdlib } from "@reach-sh/stdlib";
 import { ALGO_MyAlgoConnect as MyAlgoConnect } from "@reach-sh/stdlib";
+
 import * as backend from "./reach/build/index.main.mjs";
-import { useState } from "react";
-import { views, Loader } from "./utils";
+import { views } from "./utils";
+import { Loader } from "./components";
 import {
   ConnectAccount,
   SelectRole,
@@ -14,6 +15,8 @@ import {
 } from "./pages";
 import styled from "styled-components";
 import { background } from "./assets/images/background";
+import { useBidders } from "./context";
+import "./App.css";
 
 const StyledApp = styled.div`
   display: flex;
@@ -35,6 +38,11 @@ reach.setWalletFallback(
 const fmt = (x) => reach.formatCurrency(x, 4);
 
 function App() {
+  const {
+    state: { bidders },
+    dispatch,
+  } = useBidders();
+
   const [account, setAccount] = useState({});
   const [contract, setContract] = useState({});
   const [view, setView] = useState(views.CONNECT_ACCOUNT);
@@ -44,7 +52,6 @@ function App() {
   const [timeout, setTimeout] = useState(0);
 
   const [contractInfo, setContractInfo] = useState();
-  const [bidders, setBidders] = useState([]);
 
   const [winner, setWinner] = useState({ address: "", amount: 0 });
   const [bid, setBid] = useState(0);
@@ -60,7 +67,6 @@ function App() {
         `You out-bid ${lastBidder} who bid ${reach.formatCurrency(lastBid)}.`
       );
     } catch (e) {
-      console.log({e});
       alert(`An error occurred while submitting the bid.`);
     }
     setView(views.MAKE_BID);
@@ -74,14 +80,14 @@ function App() {
           supply: 1,
         });
         setNftId(theNFT.id, 4);
-  
+
         return {
           nftId: theNFT.id,
           minimumBid: reach.parseCurrency(minimumBid),
           Timeout: timeout,
         };
       } catch (error) {
-        console.log('An error occurred: ', error)
+        console.log("An error occurred: ", error);
       }
     },
     seeOutcome: (address, amount) => {
@@ -96,13 +102,15 @@ function App() {
       });
     },
     seeBid: (who, amt) => {
+      dispatch({
+        type: "addBidder",
+        bidder: { address: who, amount: fmt(amt) },
+      });
       console.log(
         `Auctioneer saw that ${reach.formatAddress(
           who
         )} bid ${reach.formatCurrency(amt)}.`
       );
-
-      setBidders([...bidders, { address: who, amount: fmt(amt) }]);
     },
     auctionReady: () => {
       console.log("Auction is ready");

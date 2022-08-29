@@ -29,7 +29,6 @@ export function PasteContractInfo({ attach, account, reach }) {
       await account.tokenAccept(nftId);
       attach(info);
     } catch (e) {
-      console.log(e);
       alert("Invalid token id supplied");
     }
   };

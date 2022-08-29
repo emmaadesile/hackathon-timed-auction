@@ -22,7 +22,7 @@ export function SetBidInfo({
     <Section>
       <Text size="1.2rem" fontWeight="700">Bidding Parameters</Text>
       <div>
-        <Text>Duration (sec)</Text>
+        <Text>Duration</Text>
         <StyledInput
           type="number"
           onChange={(e) => handleTimeoutChange(e.target.value)}

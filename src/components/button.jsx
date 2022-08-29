@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
-const color = "#a8eb12";
+const color = "rgb(168, 235, 18)";
+const hoverColor = "rgb(184, 215, 111)";
 
 const StyledButton = styled.button`
   width: ${({ width }) => width || "auto"};
@@ -15,11 +16,13 @@ const StyledButton = styled.button`
   text-transform: ${({ transform }) => transform || "uppercase"};
   margin-top: ${({ mt }) => mt || "0px"};
   border: 1px solid ${color};
+  transition: all 0.2s ease-in-out;
 
   &:hover {
     background: white;
     color: "#a8eb12";
-    border: 1px solid ${color};
+    border: 1px solid ${hoverColor};
+    transform: translateY(-2px);
   }
 `;
 
