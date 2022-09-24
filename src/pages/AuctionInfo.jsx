@@ -20,6 +20,8 @@ export function AuctionInfo({ winner, nftId, contractInfo }) {
     state: { bidders },
   } = useBidders();
 
+  console.log(bidders);
+
   return (
     <Section>
       <Text fontWeight={700}>Auction Information</Text>

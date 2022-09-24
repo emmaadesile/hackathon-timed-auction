@@ -60,7 +60,7 @@ function App() {
   const submitBid = async () => {
     setView(views.DEPLOYING);
     try {
-      const [lastBidder, lastBid] = await contract.apis.Bidder.bid(
+      const [lastBidder, lastBid] = await contract.apis.Bidder.makeBid(
         reach.parseCurrency(bid)
       );
       alert(
@@ -74,34 +74,39 @@ function App() {
 
   // These are for the creator of the auction
   const interact = {
-    initiateBid: async () => {
+    createBid: async () => {
       try {
         const theNFT = await reach.launchToken(account, "gorilla", "NFT", {
           supply: 1,
         });
         setNftId(theNFT.id, 4);
 
-        return {
-          nftId: theNFT.id,
-          minimumBid: reach.parseCurrency(minimumBid),
-          Timeout: timeout,
-        };
-      } catch (error) {
+        const params = [theNFT.id, timeout, reach.parseCurrency(minimumBid)];
+
+        return params;
+      } 
+      catch (error) {
         console.log("An error occurred: ", error);
       }
     },
-    seeOutcome: (address, amount) => {
-      console.log(
-        `Auctioneer saw that ${reach.formatAddress(
-          address
-        )} won with ${reach.formatCurrency(amount)}`
-      );
+    seeWinner: (address, amount, result) => {
+      if (parseInt(result) === 2) {
+        console.log(`Auctioneer saw that no bidders made any bid during the auction`);
+      }
+      else {
+        console.log(
+          `Auctioneer saw that ${reach.formatAddress(
+            address
+          )} won with ${reach.formatCurrency(amount)}`
+        );
+      }
+      
       setWinner({
         address,
         amount: fmt(amount),
       });
     },
-    seeBid: (who, amt) => {
+    seeOutcome: (who, amt) => {
       dispatch({
         type: "addBidder",
         bidder: { address: who, amount: fmt(amt) },
@@ -112,7 +117,7 @@ function App() {
         )} bid ${reach.formatCurrency(amt)}.`
       );
     },
-    auctionReady: () => {
+    auctionIsReady: () => {
       console.log("Auction is ready");
     },
   };
@@ -135,7 +140,7 @@ function App() {
 
     deploy: async () => {
       const contract = account.contract(backend);
-      backend.Auctiooner(contract, interact);
+      backend.Creator(contract, interact);
       setView(views.DEPLOYING);
       const ctcInfo = JSON.stringify(await contract.getInfo(), null, 2);
       setContractInfo(ctcInfo);
