@@ -86,7 +86,7 @@ We declassify the createBid function for the Creator and get the `NFT_ID`, `DEAD
   })
 ```
 
-Next, we publish the contract, and create a bids variable that keeps track of the the bids- `Address` and `bidAmount`) for the NFT. We also call the the `auctionIsReady` function and assert that the creator has the NFT in their wallet
+Next, we publish the contract, and create a `bids` variable that keeps track of the all bids- `Address` and `bidAmount`) submitted for the NFT. We also call the `auctionIsReady` function and assert that the `Creator` has the NFT in their wallet
 
 ```javascript
     // ...
@@ -113,7 +113,7 @@ Next, we publish the contract, and create a bids variable that keeps track of th
 const [timeLeft, continueGoing] = makeDeadline(DEADLINE);
 ```
 
-The `makeDeadline` function takes the `DEADLINE` and returns `timeLeft` and `continueGoing`  that we're going to use below.
+The `makeDeadline` function takes the `DEADLINE` and returns `timeLeft` and `continueGoing`  which we're going to use below.
 
 ```javascript
 1  | const [currentBidPrice, foreRunner, noBidYet] = parallelReduce([ MINIMUM_BID, Creator, true ])
@@ -152,9 +152,9 @@ The `makeDeadline` function takes the `DEADLINE` and returns `timeLeft` and `con
 Let's break down what's going on in the code:
 
 - Lines 2 through 4 ensures that bidders can makes bids as long as the `NFT_ID` is 1 and `continueGoing()` is true
-- Line 4 prevents the creator of the NFT from bidding in the auction
-- Line 7 through 16 checks if the `bidAmount` is greater than the `currentBidPrice` and updates the bids array
-- Lines 17 through 19 ensures that both the creator and observer can see all bid (`bidder` and `bidAmount`)
+- Line 4 prevents the creator of the NFT from participating in the auction
+- Line 7 through 16 checks if the `bidAmount` is greater than the `currentBidPrice` and updates the bids object
+- Lines 17 through 19 ensures that both the creator and observer can see all bids (`bidder` and `bidAmount`)
 - Lines 20 through 22 transfers the currentBidPrice to the `currentBidder`
 - Lines 26 through 28 returns the `currentBidPrice`, `foreRunner`, `noBidYet` if the bidAmount is less than the `currentBidPrice`
 
@@ -524,4 +524,4 @@ export default App;
 ## We made it
 Congratulations on making it to the end of the workshop. You successfully build an NFT auction app on the Blockchain. With this foundational knowledge, you have the skills to build more robust applications on the Blockchain. You can find the complete code for the program [here](https://github.com/emmaadesile/hackathon-timed-auction)
 
-If you found this helpful, please let us know on our [Discord](the Discord community) channel.
+If you found this helpful, please let us know on our [Discord](https://discord.gg/AZsgcXu) channel.
